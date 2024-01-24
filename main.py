@@ -16,7 +16,7 @@ def convert_format(openai_format):
     return phind_format
 
 
-@app.route('/proxy', methods=['POST'])
+@app.route('/v1/chat/completions', methods=['POST'])
 def proxy():
     # 获取请求内容
     incoming_data = request.get_data(as_text=True)
@@ -32,7 +32,8 @@ def proxy():
     }
 
     # 向目标API发送请求并获取响应
-    response = requests.post(url, headers=headers, data=data.encode('utf-8'), stream=True)
+    response = requests.post(url, headers=headers,
+                             data=data.encode('utf-8'), stream=True)
 
     # 将响应内容转换为生成器，以便可以流式传输
     def generate():
@@ -45,5 +46,10 @@ def proxy():
     return Response(generate(), content_type='text/event-stream')
 
 
+@app.route('/')
+def home():
+    return "Hello, World!"
+
+
 if __name__ == '__main__':
-    app.run(debug=True, port=7860)
+    app.run(debug=True, port=8080)
